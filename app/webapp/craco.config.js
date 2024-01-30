@@ -5,8 +5,6 @@ module.exports = {
     configure: {
       resolve: {
         fallback: {
-          crypto: require.resolve('crypto-browserify'),
-          os: require.resolve('os-browserify'),
         },
       },
       plugins: [
