@@ -1,0 +1,8 @@
+export const ORCID_API = 'https://orcid.org'
+export const ORCID_CLIENT_ID = process.env.ORCID_CLIENT_ID as string;
+export const ORCID_SECRET = process.env.ORCID_SECRET as string;
+
+export const SENSENET_DOMAIN = 'http://127.0.0.1:3000/';
+
+if (!ORCID_CLIENT_ID) throw new Error('ORCID_CLIENT_ID undefined')
+if (!ORCID_SECRET) throw new Error('ORCID_SECRET undefined')
