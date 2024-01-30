@@ -1,11 +1,11 @@
-import { Grommet, BoxExtendedProps } from 'grommet';
+import { BoxExtendedProps, Grommet } from 'grommet';
 import { createContext, useContext, useState } from 'react';
 
 import {
-  darkTheme,
   ExtendedThemeType,
-  lightTheme,
   StyleConstants,
+  darkTheme,
+  lightTheme,
 } from './themes';
 
 export type ThemeContextType = {

@@ -1,15 +1,14 @@
 import { ResponsiveContext } from 'grommet';
 import {
-  createContext,
   CSSProperties,
+  createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
 } from 'react';
 
-import { IElement } from './IElement';
-import { parseCssUnits } from '../../utils/general';
+import { parseCssUnits } from './utils';
 
 export type ResponsiveContextType = {
   size: string;
@@ -27,7 +26,7 @@ const AppResponsiveContext = createContext<ResponsiveContextType | undefined>(
   undefined
 );
 
-export const ResponsiveApp = (props: IElement): JSX.Element => {
+export const ResponsiveApp = (props: React.PropsWithChildren): JSX.Element => {
   const size = useContext(ResponsiveContext);
   const mobile = size ? size.includes('small') : false;
   const [vw, setVw] = useState<number>(window.innerWidth);
