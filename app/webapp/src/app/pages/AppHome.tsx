@@ -1,12 +1,12 @@
-import { AppHeading } from '../../ui-components';
 import { BoxCentered } from '../../ui-components/BoxCentered';
+import { AppConnectWidget } from '../AppConnectButton';
 import { ViewportPage } from '../Viewport';
 
 export const AppHome = (props: {}) => {
   const content = (() => {
     return (
       <BoxCentered>
-        <AppHeading level="1">Welcome</AppHeading>
+        <AppConnectWidget></AppConnectWidget>
       </BoxCentered>
     );
   })();

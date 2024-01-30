@@ -75,8 +75,10 @@ export const ViewportPage = (props: { content: ReactNode; nav: ReactNode }) => {
         margin: '0 auto',
         overflow: 'hidden',
       }}>
-      <Box id="header" style={{ flexGrow: 1, overflowY: 'auto' }}>
-        <Box style={{ flexShrink: 0 }}>{props.content}</Box>
+      <Box id="content" style={{ flexGrow: 1, overflowY: 'auto' }}>
+        <Box style={{ flexGrow: 1, flexShrink: 0 }} justify="center">
+          {props.content}
+        </Box>
       </Box>
       <Box id="nav" style={{ height: '90px', flexShrink: 0 }}>
         {props.nav}

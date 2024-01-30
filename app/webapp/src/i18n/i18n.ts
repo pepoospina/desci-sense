@@ -6,6 +6,8 @@ i18n.use(initReactI18next).init({
     ENG: {
       translation: {
         connectedAs: 'Connected as',
+        connectAccount: 'Login',
+        connectBtn: 'Login with ORCID',
       },
     },
   },

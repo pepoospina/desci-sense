@@ -13,7 +13,7 @@ const AccountContextValue = createContext<AccountContextType | undefined>(
 
 /** Manages the AA user ops and their execution */
 export const AccountContext = (props: PropsWithChildren) => {
-  const isConnected = true;
+  const isConnected = false;
   const disconnect = () => {};
 
   return (

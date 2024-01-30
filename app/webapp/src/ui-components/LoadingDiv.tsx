@@ -1,7 +1,12 @@
-import { Box } from 'grommet';
+import { Box, Spinner } from 'grommet';
+
 import './LoadingDiv.css';
 
-export const LoadingDiv = (props: { height?: string; width?: string; style?: React.CSSProperties }) => {
+export const LoadingDiv = (props: {
+  height?: string;
+  width?: string;
+  style?: React.CSSProperties;
+}) => {
   const height = props.height || '22px';
   const width = props.width || '120px';
 
@@ -10,4 +15,8 @@ export const LoadingDiv = (props: { height?: string; width?: string; style?: Rea
       <div className="loading-square"></div>
     </Box>
   );
+};
+
+export const Loading = () => {
+  return <Spinner></Spinner>;
 };
