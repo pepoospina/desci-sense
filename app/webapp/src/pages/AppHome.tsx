@@ -1,6 +1,6 @@
-import { BoxCentered } from '../../ui-components/BoxCentered';
-import { AppConnectWidget } from '../AppConnectButton';
-import { ViewportPage } from '../Viewport';
+import { AppConnectWidget } from '../app/AppConnectButton';
+import { ViewportPage } from '../app/Viewport';
+import { BoxCentered } from '../ui-components/BoxCentered';
 
 export const AppHome = (props: {}) => {
   const content = (() => {

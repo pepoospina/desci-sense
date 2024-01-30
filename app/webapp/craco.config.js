@@ -4,8 +4,7 @@ module.exports = {
   webpack: {
     configure: {
       resolve: {
-        fallback: {
-        },
+        fallback: {},
       },
       plugins: [
         new webpack.DefinePlugin({
@@ -13,7 +12,9 @@ module.exports = {
             browser: true,
             env: {
               NODE_ENV: '"development"',
-              FUNCTIONS_BASE: '"http://127.0.0.1:5001/microrevolutions-a6bcf/europe-west1"',
+              FUNCTIONS_BASE:
+                '"http://127.0.0.1:5001/sensenets-9ef26/europe-west1"',
+              ORCID_CLIENT_ID: '"APP-M1QE4V5MBUYC7Y54"',
             },
           },
         }),

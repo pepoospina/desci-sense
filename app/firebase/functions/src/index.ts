@@ -8,7 +8,9 @@
  */
 
 import { postsApp } from "./posts";
+import { authApp } from "./auth";
 
+export const auth = authApp;
 export const post = postsApp;
 
 // Start writing functions

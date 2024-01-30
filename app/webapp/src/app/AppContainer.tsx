@@ -2,10 +2,10 @@ import { Box } from 'grommet';
 import { createContext, useContext, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import { AppHome } from '../pages/AppHome';
 import { RouteNames } from '../route.names';
 import { GlobalNav } from './GlobalNav';
 import { MAX_WIDTH_APP, ViewportContainer } from './Viewport';
-import { AppHome } from './pages/AppHome';
 
 export interface SetPageTitleType {
   prefix: string;
