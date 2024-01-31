@@ -8,5 +8,5 @@ export const postOrcidCode = async (code: string) => {
   });
 
   const body = await res.json();
-  return body.id;
+  return body.token;
 };

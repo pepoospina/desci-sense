@@ -12,16 +12,16 @@ function App() {
   return (
     <div className="App">
       <I18nextProvider i18n={i18n}>
-        <AccountContext>
-          <GlobalStyles />
-          <ThemedApp>
-            <ResponsiveApp>
-              <BrowserRouter>
+        <GlobalStyles />
+        <ThemedApp>
+          <ResponsiveApp>
+            <BrowserRouter>
+              <AccountContext>
                 <AppContainer></AppContainer>
-              </BrowserRouter>
-            </ResponsiveApp>
-          </ThemedApp>
-        </AccountContext>
+              </AccountContext>
+            </BrowserRouter>
+          </ResponsiveApp>
+        </ThemedApp>
       </I18nextProvider>
     </div>
   );
