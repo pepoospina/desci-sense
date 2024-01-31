@@ -31,7 +31,7 @@ export const AppConnectWidget = () => {
     return (
       <>
         <AppHeading level="3" style={{ marginBottom: '18px' }}>
-          {t('connectAccount')}
+          {t('connect')}
         </AppHeading>
         {isLoading ? (
           <Loading></Loading>

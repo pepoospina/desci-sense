@@ -10,7 +10,8 @@ import { useAccountContext } from './AccountContext';
 
 export const ConnectedUser = (props: {}) => {
   const { t } = useTranslation();
-  const { isConnected, disconnect } = useAccountContext();
+  const { isConnected, connect, disconnect, connectedUser } =
+    useAccountContext();
   const { constants } = useThemeContext();
 
   const [showDrop, setShowDrop] = useState<boolean>(false);
@@ -18,7 +19,10 @@ export const ConnectedUser = (props: {}) => {
   const content = (() => {
     if (!isConnected) {
       return (
-        <AppButton style={{ fontSize: '16px', padding: '6px 8px' }}></AppButton>
+        <AppButton
+          style={{ fontSize: '16px', padding: '6px 8px' }}
+          label={t('connect')}
+          onClick={() => connect()}></AppButton>
       );
     }
 
@@ -26,9 +30,12 @@ export const ConnectedUser = (props: {}) => {
       <AppCircleDropButton
         plain
         label={
-          <UserExpert
-            color={constants.colors.primary}
-            style={{ margin: '2px 0px 0px 5px' }}></UserExpert>
+          <Box>
+            <UserExpert
+              color={constants.colors.primary}
+              style={{ margin: '2px 0px 0px 5px' }}></UserExpert>
+            <Text>{connectedUser?.name}</Text>
+          </Box>
         }
         open={showDrop}
         onClose={() => setShowDrop(false)}

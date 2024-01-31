@@ -18,7 +18,13 @@ export const authCodeController: RequestHandler = async (request, response) => {
 
   if (authenticatedUser && authenticatedUser.orcid) {
     /** user correctly authentiacated with orcid */
-    token = generateAccessToken(authenticatedUser.orcid, TOKEN_EXPIRATION);
+    token = generateAccessToken(
+      {
+        orcid: authenticatedUser.orcid,
+        name: authenticatedUser.name,
+      },
+      TOKEN_EXPIRATION
+    );
     logger.debug('token generated slice', { token: token.slice(0, 8) });
   }
 

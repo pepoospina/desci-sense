@@ -1,9 +1,9 @@
 export enum PLATFORM {
   X = 'X',
-  Nanopubs = 'Nanopubs'
+  Nanopubs = 'Nanopubs',
 }
 
 export interface PostCreate {
   content: string;
-  platforms: [PLATFORM]
+  platforms: [PLATFORM];
 }

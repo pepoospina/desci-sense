@@ -1,3 +1,4 @@
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 import {
   PropsWithChildren,
   createContext,
@@ -6,20 +7,24 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import { postOrcidCode } from '../auth/auth.requests';
+import { ConnectedUser } from '../types';
 import { ORCID_CLIENT_ID, ORCID_REDIRECT_URL, ORCID_SERVER } from './config';
 
 const DEBUG = true;
 
 const ORCID_URL = `${ORCID_SERVER}/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URL}`;
 
+type JWT_PAYLOAD = JwtPayload & ConnectedUser;
+
 export type AccountContextType = {
   isConnected: boolean;
   isConnecting: boolean;
   disconnect: () => void;
   connect: () => void;
+  connectedUser?: ConnectedUser;
 };
 
 const AccountContextValue = createContext<AccountContextType | undefined>(
@@ -28,18 +33,21 @@ const AccountContextValue = createContext<AccountContextType | undefined>(
 
 /** Manages the authentication process */
 export const AccountContext = (props: PropsWithChildren) => {
-  const location = useLocation();
   const codeHandled = useRef(false);
 
   const [isConnected, setIsConnected] = useState<boolean>();
+  const [connectedUser, setConnectedUser] = useState<ConnectedUser>();
 
   // Extract the code from URL
-  const searchParams = new URLSearchParams(location.search);
+  const [searchParams, setSearchParams] = useSearchParams();
   const code = searchParams.get('code');
 
   const checkToken = () => {
     const token = localStorage.getItem('token');
     if (token) {
+      const decoded = jwtDecode(token) as JWT_PAYLOAD;
+      if (DEBUG) console.log('user from token', { decoded });
+      setConnectedUser(decoded);
       setIsConnected(true);
     } else {
       setIsConnected(false);
@@ -59,6 +67,8 @@ export const AccountContext = (props: PropsWithChildren) => {
         if (DEBUG)
           console.log('token received (sliced)', { token: token.slice(0, 8) });
 
+        searchParams.delete('code');
+        setSearchParams(searchParams);
         localStorage.setItem('token', token);
         checkToken();
       });
@@ -67,7 +77,7 @@ export const AccountContext = (props: PropsWithChildren) => {
 
   const disconnect = () => {
     if (DEBUG) console.log('disconnecting');
-    localStorage.deleteItem('token');
+    localStorage.removeItem('token');
     checkToken();
   };
 
@@ -82,6 +92,7 @@ export const AccountContext = (props: PropsWithChildren) => {
         isConnecting: isConnected === undefined,
         connect,
         disconnect,
+        connectedUser,
       }}>
       {props.children}
     </AccountContextValue.Provider>
