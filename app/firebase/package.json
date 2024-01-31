@@ -16,5 +16,10 @@
   "devDependencies": {
     "firebase-logging": "^1.0.16",
     "firebase-tools": "^11.21.0"
+  },
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.4"
   }
 }
