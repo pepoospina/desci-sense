@@ -11,11 +11,12 @@ import { useSearchParams } from 'react-router-dom';
 
 import { postOrcidCode } from '../auth/auth.requests';
 import { ConnectedUser } from '../types';
-import { ORCID_CLIENT_ID, ORCID_REDIRECT_URL, ORCID_SERVER } from './config';
+import { TwitterContext } from './TwitterContext';
+import { ORCID_API_URL, ORCID_CLIENT_ID, ORCID_REDIRECT_URL } from './config';
 
 const DEBUG = true;
 
-const ORCID_URL = `${ORCID_SERVER}/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URL}`;
+const ORCID_LOGIN_URL = `${ORCID_API_URL}/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URL}`;
 
 type JWT_PAYLOAD = JwtPayload & ConnectedUser;
 
@@ -25,6 +26,7 @@ export type AccountContextType = {
   disconnect: () => void;
   connect: () => void;
   connectedUser?: ConnectedUser;
+  token?: string;
 };
 
 const AccountContextValue = createContext<AccountContextType | undefined>(
@@ -37,6 +39,7 @@ export const AccountContext = (props: PropsWithChildren) => {
 
   const [isConnected, setIsConnected] = useState<boolean>();
   const [connectedUser, setConnectedUser] = useState<ConnectedUser>();
+  const [token, setToken] = useState<string>();
 
   // Extract the code from URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,12 +47,17 @@ export const AccountContext = (props: PropsWithChildren) => {
 
   const checkToken = () => {
     const token = localStorage.getItem('token');
-    if (token) {
+
+    if (token !== null) {
       const decoded = jwtDecode(token) as JWT_PAYLOAD;
       if (DEBUG) console.log('user from token', { decoded });
+
+      setToken(token);
       setConnectedUser(decoded);
       setIsConnected(true);
     } else {
+      setToken(undefined);
+      setConnectedUser(undefined);
       setIsConnected(false);
     }
   };
@@ -82,7 +90,7 @@ export const AccountContext = (props: PropsWithChildren) => {
   };
 
   const connect = () => {
-    window.location.href = ORCID_URL;
+    window.location.href = ORCID_LOGIN_URL;
   };
 
   return (
@@ -93,8 +101,9 @@ export const AccountContext = (props: PropsWithChildren) => {
         connect,
         disconnect,
         connectedUser,
+        token,
       }}>
-      {props.children}
+      <TwitterContext>{props.children}</TwitterContext>
     </AccountContextValue.Provider>
   );
 };

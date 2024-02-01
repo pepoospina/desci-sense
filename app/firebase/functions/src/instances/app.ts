@@ -1,5 +1,7 @@
 import cors from 'cors';
 import express from 'express';
+
+import { authenticate } from '../middleware/authenticate';
 import { errorHandling } from '../middleware/errorHandlingMiddleware';
 
 export const app = (router?: express.Router): express.Application => {
@@ -12,9 +14,12 @@ export const app = (router?: express.Router): express.Application => {
     })
   );
 
+  app.use(authenticate);
+
   if (router) {
     app.use(router);
   }
+
   app.use(errorHandling);
 
   return app;
