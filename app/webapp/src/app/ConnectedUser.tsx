@@ -8,11 +8,15 @@ import { useThemeContext } from '../ui-components/ThemedApp';
 import { cap } from '../utils/general';
 import { useAccountContext } from './AccountContext';
 import { OrcidAnchor } from './OrcidAnchor';
+import { TwitterAnchor } from './TwitterAnchor';
+import { useTwitterContext } from './TwitterContext';
 
 export const ConnectedUser = (props: {}) => {
   const { t } = useTranslation();
   const { isConnected, connect, disconnect, connectedUser } =
     useAccountContext();
+
+  const { twitterUser } = useTwitterContext();
   const { constants } = useThemeContext();
 
   const [showDrop, setShowDrop] = useState<boolean>(false);
@@ -55,6 +59,12 @@ export const ConnectedUser = (props: {}) => {
             <Box margin={{ bottom: 'small' }}>
               <Text>{cap(t('orcid'))}</Text>
               <OrcidAnchor orcid={connectedUser?.orcid}></OrcidAnchor>
+            </Box>
+
+            <Box margin={{ bottom: 'small' }}>
+              <Text>{cap(t('twitter'))}</Text>
+              <TwitterAnchor
+                screen_name={twitterUser?.screen_name}></TwitterAnchor>
             </Box>
 
             <AppButton

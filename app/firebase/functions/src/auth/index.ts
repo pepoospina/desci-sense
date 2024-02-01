@@ -4,12 +4,16 @@ import * as functions from 'firebase-functions';
 import { RUNTIME_OPTIONS } from '../config/RUNTIME_OPTIONS';
 import { app } from '../instances/app';
 import { authCodeController } from './controllers/code.controller';
-import { getTwitterCodeController } from './controllers/twitter.controller';
+import {
+  getTwitterCodeController,
+  postTwitterVerifierController,
+} from './controllers/twitter.controller';
 
 const authRouter = express.Router();
 
 authRouter.post('/code', authCodeController);
 authRouter.post('/twitter-code', getTwitterCodeController);
+authRouter.post('/twitter-verifier', postTwitterVerifierController);
 
 export const authApp = functions
   .region('europe-west1')

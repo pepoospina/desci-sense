@@ -7,10 +7,10 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "preserveSymlinks": true,
+    "typeRoots": ["./src/types", "node_modules/@types"],
   },
   "compileOnSave": true,
-  "include": [
-    "src"
-  ]
+  "include": ["src/index.ts"],
 }

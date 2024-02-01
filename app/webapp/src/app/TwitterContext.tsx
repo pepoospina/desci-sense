@@ -4,24 +4,23 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { getTwitterAuthToken } from '../auth/auth.requests';
-import { useAccountContext } from './AccountContext';
 import {
-  TWITTER_API_URL_AUTH,
-  TWITTER_CALLBACK_URL_ENCODED,
-  TWITTER_CLIENT_ID,
-} from './config';
+  getTwitterAuthToken,
+  postTwitterVerifierToken,
+} from '../auth/auth.requests';
+import { TwitterUser } from '../types';
+import { useAccountContext } from './AccountContext';
+import { TWITTER_API_URL } from './config';
 
 const DEBUG = true;
 
-const TWITTER_AUTHORIZE_URL = `${TWITTER_API_URL_AUTH}/oauth/request_token?oauth_consumer_key=${TWITTER_CLIENT_ID}&oauth_callback=${TWITTER_CALLBACK_URL_ENCODED}`;
-
 export type TwitterContextType = {
-  hasTwitter: boolean;
   connect: () => void;
+  twitterUser?: TwitterUser;
 };
 
 const TwitterContextValue = createContext<TwitterContextType | undefined>(
@@ -30,33 +29,85 @@ const TwitterContextValue = createContext<TwitterContextType | undefined>(
 
 /** Manages the authentication process */
 export const TwitterContext = (props: PropsWithChildren) => {
-  const { token } = useAccountContext();
-  const codeHandled = useRef(false);
+  const { appAccessToken } = useAccountContext();
+  const tokenHandled = useRef(false);
+  const verifierHandled = useRef(false);
 
-  // Extract the code from URL
+  const [oauthToken, setOauthToken] = useState<string>();
+
   const [searchParams, setSearchParams] = useSearchParams();
-  const oauth_token = searchParams.get('oauth_token');
+  const oauth_token_param = searchParams.get('oauth_token');
+  const oauth_verifier_param = searchParams.get('oauth_verifier');
 
-  useEffect(() => {
-    if (!codeHandled.current && oauth_token) {
-      codeHandled.current = true;
-      if (DEBUG) console.log('oauth_token received', { oauth_token });
-    }
-  }, [oauth_token]);
+  const [twitterUser, setTwitterUser] = useState<TwitterUser>();
 
   const connect = () => {
-    if (token) {
-      getTwitterAuthToken(token).then((oauthToken) => {
-        console.log({ oauthToken });
+    if (appAccessToken) {
+      getTwitterAuthToken(appAccessToken).then((oauthToken) => {
+        setOauthToken(oauthToken);
       });
     }
   };
+
+  const checkConnected = () => {
+    const twitter_user_str = localStorage.getItem('twitter_user');
+
+    if (twitter_user_str !== null) {
+      const twitter_user = JSON.parse(twitter_user_str);
+      if (DEBUG) console.log('twitter found', twitter_user);
+      setTwitterUser(twitter_user);
+    } else {
+      setTwitterUser(undefined);
+    }
+  };
+
+  useEffect(() => {
+    if (!tokenHandled.current && oauthToken) {
+      tokenHandled.current = true;
+      window.location.href = `${TWITTER_API_URL}/oauth/authorize?oauth_token=${oauthToken}`;
+    }
+  }, [oauthToken]);
+
+  useEffect(() => {
+    checkConnected();
+  }, []);
+
+  useEffect(() => {
+    if (
+      !verifierHandled.current &&
+      oauth_token_param &&
+      oauth_verifier_param &&
+      appAccessToken
+    ) {
+      verifierHandled.current = true;
+
+      postTwitterVerifierToken(appAccessToken, {
+        oauth_verifier: oauth_verifier_param,
+        oauth_token: oauth_token_param,
+      }).then((twitter_user: TwitterUser) => {
+        if (DEBUG) console.log('twitter connected', twitter_user);
+
+        searchParams.delete('oauth_token');
+        searchParams.delete('oauth_verifier');
+        setSearchParams(searchParams);
+
+        localStorage.setItem('twitter_user', JSON.stringify(twitter_user));
+        checkConnected();
+      });
+    }
+  }, [
+    appAccessToken,
+    oauth_token_param,
+    oauth_verifier_param,
+    searchParams,
+    setSearchParams,
+  ]);
 
   return (
     <TwitterContextValue.Provider
       value={{
         connect,
-        hasTwitter: false,
+        twitterUser,
       }}>
       {props.children}
     </TwitterContextValue.Provider>

@@ -4,16 +4,16 @@ import { useAccountContext } from '../app/AccountContext';
 import { AppConnectWidget } from '../app/AppConnectButton';
 import { useTwitterContext } from '../app/TwitterContext';
 import { ViewportPage } from '../app/Viewport';
-import { AppButton } from '../ui-components';
+import { AppButton, AppHeading } from '../ui-components';
 import { BoxCentered } from '../ui-components/BoxCentered';
 
 export const AppHome = (props: {}) => {
   const { t } = useTranslation();
   const { isConnected } = useAccountContext();
-  const { hasTwitter, connect: connectTwitter } = useTwitterContext();
+  const { twitterUser, connect: connectTwitter } = useTwitterContext();
 
   const content = (() => {
-    if (isConnected && !hasTwitter)
+    if (isConnected && !twitterUser)
       return (
         <AppButton
           primary
@@ -22,6 +22,8 @@ export const AppHome = (props: {}) => {
       );
 
     if (!isConnected) return <AppConnectWidget></AppConnectWidget>;
+
+    return <AppHeading level="3">Ready!</AppHeading>;
   })();
 
   return (

@@ -26,7 +26,7 @@ export type AccountContextType = {
   disconnect: () => void;
   connect: () => void;
   connectedUser?: ConnectedUser;
-  token?: string;
+  appAccessToken?: string;
 };
 
 const AccountContextValue = createContext<AccountContextType | undefined>(
@@ -101,7 +101,7 @@ export const AccountContext = (props: PropsWithChildren) => {
         connect,
         disconnect,
         connectedUser,
-        token,
+        appAccessToken: token,
       }}>
       <TwitterContext>{props.children}</TwitterContext>
     </AccountContextValue.Provider>

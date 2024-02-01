@@ -11,16 +11,33 @@ export const postOrcidCode = async (code: string) => {
   return body.token;
 };
 
-export const getTwitterAuthToken = async (token: string) => {
+export const getTwitterAuthToken = async (appAccessToken: string) => {
   const res = await fetch(FUNCTIONS_BASE + '/auth/twitter-code', {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${appAccessToken}`,
     },
     body: '',
   });
 
   const body = await res.json();
-  return body.token;
+  return body.oauth_token;
+};
+
+export const postTwitterVerifierToken = async (
+  appAccessToken: string,
+  oauth: { oauth_token: string; oauth_verifier: string }
+) => {
+  const res = await fetch(FUNCTIONS_BASE + '/auth/twitter-verifier', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${appAccessToken}`,
+    },
+    body: JSON.stringify(oauth),
+  });
+
+  const body = await res.json();
+  return body.twitter_user;
 };
