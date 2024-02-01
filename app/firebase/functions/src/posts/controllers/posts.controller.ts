@@ -1,16 +1,22 @@
 import { RequestHandler } from 'express';
 import { logger } from 'firebase-functions/v1';
 
-import { PostCreate } from '../../types';
+import { PostCreate } from '../../@webapp/types';
+import { postMessage } from '../../auth/twitter.auth.utils';
 import { postsValidationScheme } from './posts.schemas';
 
 export const postsController: RequestHandler = async (request, response) => {
   try {
+    const userId = (request as any).userId;
+    if (!userId) {
+      response.status(403).send({});
+      return;
+    }
     const payload = (await postsValidationScheme.validate(
       request.body
     )) as PostCreate;
 
-    logger.info({ payload });
+    await postMessage(userId, payload);
 
     response.status(200).send({ success: true });
   } catch (error: any) {

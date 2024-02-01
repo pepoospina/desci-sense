@@ -1,14 +1,18 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { useAccountContext } from '../app/AccountContext';
 import { AppConnectWidget } from '../app/AppConnectButton';
 import { useTwitterContext } from '../app/TwitterContext';
 import { ViewportPage } from '../app/Viewport';
-import { AppButton, AppHeading } from '../ui-components';
+import { RouteNames } from '../route.names';
+import { AppButton } from '../ui-components';
 import { BoxCentered } from '../ui-components/BoxCentered';
+import { Loading } from '../ui-components/LoadingDiv';
 
 export const AppHome = (props: {}) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { isConnected } = useAccountContext();
   const { twitterUser, connect: connectTwitter } = useTwitterContext();
 
@@ -23,7 +27,9 @@ export const AppHome = (props: {}) => {
 
     if (!isConnected) return <AppConnectWidget></AppConnectWidget>;
 
-    return <AppHeading level="3">Ready!</AppHeading>;
+    navigate(RouteNames.Post);
+
+    return <Loading />;
   })();
 
   return (

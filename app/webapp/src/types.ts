@@ -22,3 +22,13 @@ export interface TwitterUser {
   user_id: string;
   screen_name: string;
 }
+
+export enum PLATFORM {
+  X = 'X',
+  Nanopubs = 'Nanopubs',
+}
+
+export interface PostCreate {
+  content: string;
+  platforms: [PLATFORM];
+}

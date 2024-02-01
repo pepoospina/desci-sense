@@ -86,6 +86,7 @@ export const AccountContext = (props: PropsWithChildren) => {
   const disconnect = () => {
     if (DEBUG) console.log('disconnecting');
     localStorage.removeItem('token');
+    localStorage.removeItem('twitter_user');
     checkToken();
   };
 

@@ -1,7 +1,7 @@
 import * as crypto from 'crypto-js';
 import { logger } from 'firebase-functions/v1';
 
-import { TwitterUser } from '../@webapp/types';
+import { PostCreate, TwitterUser } from '../@webapp/types';
 import {
   TWITTER_API_KEY,
   TWITTER_API_SECRET_KEY,
@@ -170,4 +170,44 @@ export const checkTwitterVerifierToken = async (
     user_id: user.twitter.user_id,
     screen_name: user.twitter.screen_name,
   };
+};
+
+interface PostRequest {
+  text: string;
+}
+
+interface PostResponse {}
+
+export const postMessage = async (
+  userId: string,
+  post: PostCreate
+): Promise<void> => {
+  const user = await getUser(userId, true);
+
+  if (
+    !user.twitter ||
+    !user.twitter.oauth_token_access ||
+    !user.twitter.oauth_token_secret_access
+  ) {
+    throw new Error(`Twitter access credentials not found for user ${userId}`);
+  }
+
+  const userCredentials: ApiCredentials = {
+    key: user.twitter.oauth_token_access,
+    secret: user.twitter.oauth_token_secret_access,
+  };
+
+  const requestData: RequestData<PostRequest> = {
+    url: `${TWITTER_API_URL}/2/tweets`,
+    method: 'POST',
+    data: { text: post.content },
+  };
+
+  const result = await sendTwitterRequest<PostRequest, PostResponse>(
+    requestData,
+    apiCredentials,
+    userCredentials
+  );
+
+  console.log({ result });
 };

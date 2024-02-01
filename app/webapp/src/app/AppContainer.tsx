@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { AppHome } from '../pages/AppHome';
+import { AppPost } from '../pages/AppPost';
 import { RouteNames } from '../route.names';
 import { GlobalNav } from './GlobalNav';
 import { MAX_WIDTH_APP, ViewportContainer } from './Viewport';
@@ -34,10 +35,10 @@ export const AppContainer = (props: React.PropsWithChildren) => {
         </Box>
         <Box style={{ height: 'calc(100% - 80px)' }}>
           <Routes>
-            {/* Landing and project create */}
             <Route
               path={RouteNames.AppHome}
               element={<AppHome></AppHome>}></Route>
+            <Route path={RouteNames.Post} element={<AppPost></AppPost>}></Route>
           </Routes>
         </Box>
       </ViewportContainer>

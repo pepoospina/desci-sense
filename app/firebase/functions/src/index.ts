@@ -6,12 +6,11 @@
  *
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
-
-import { postsApp } from "./posts";
-import { authApp } from "./auth";
+import { authApp } from './auth';
+import { postsApp } from './posts';
 
 export const auth = authApp;
-export const post = postsApp;
+export const posts = postsApp;
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

@@ -1,4 +1,4 @@
-import { dark, grommet, ThemeType } from 'grommet/themes';
+import { ThemeType, dark, grommet } from 'grommet/themes';
 import { deepMerge } from 'grommet/utils';
 import { css } from 'styled-components';
 
@@ -50,9 +50,9 @@ const constants: StyleConstants = {
     xsmall: '14px',
   },
   colors: {
-    primary: '#1a1a1a',
-    primaryLight: '#1a1a1a7a',
-    text: '#1a1a1a',
+    primary: '#506fa3',
+    primaryLight: '#365a97',
+    text: '#20365f',
     textOnPrimary: '#ffffff',
     border: '#333333',
     headings: '#1a1a1a',
