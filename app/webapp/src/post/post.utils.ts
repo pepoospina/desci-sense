@@ -12,5 +12,5 @@ export const postMessage = async (post: PostCreate, appAccessToken: string) => {
   });
 
   const body = await res.json();
-  return body.twitter_user;
+  return body.tweet;
 };

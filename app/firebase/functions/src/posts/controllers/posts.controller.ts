@@ -16,9 +16,9 @@ export const postsController: RequestHandler = async (request, response) => {
       request.body
     )) as PostCreate;
 
-    await postMessage(userId, payload);
+    const tweet = await postMessage(userId, payload);
 
-    response.status(200).send({ success: true });
+    response.status(200).send({ success: true, tweet });
   } catch (error: any) {
     logger.error('error', error);
     response.status(500).send({ success: false, error: error.message });

@@ -1,4 +1,4 @@
-import { TwitterApi } from 'twitter-api-v2';
+import { TweetV2PostTweetResult, TwitterApi } from 'twitter-api-v2';
 
 import { PostCreate, TwitterUser } from '../@webapp/types';
 import {
@@ -89,7 +89,7 @@ export const getTwitterAccessToken = async (
 export const postMessage = async (
   userId: string,
   post: PostCreate
-): Promise<void> => {
+): Promise<TweetV2PostTweetResult> => {
   const user = await getUser(userId, true);
 
   if (!user.twitter || !user.twitter.accessToken || !user.twitter.accessToken) {
@@ -105,5 +105,5 @@ export const postMessage = async (
 
   const result = await client.v2.tweet(post.content);
 
-  console.log({ result });
+  return result;
 };
