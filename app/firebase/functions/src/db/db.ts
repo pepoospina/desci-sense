@@ -9,4 +9,5 @@ export const db = getFirestore();
 
 export const collections = {
   users: db.collection(CollectionNames.Users),
+  posts: db.collection(CollectionNames.Posts),
 };

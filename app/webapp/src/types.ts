@@ -41,9 +41,18 @@ export enum PLATFORM {
   Nanopubs = 'Nanopubs',
 }
 
-export interface PostCreate {
+export interface AppPostCreate {
   content: string;
   platforms: [PLATFORM];
 }
 
+export type AppPostStore = AppPostCreate & {
+  author: string;
+  tweet?: TweetRead;
+};
+
 export type TweetRead = TweetV2PostTweetResult['data'];
+
+export type AppPost = AppPostStore & {
+  id: string;
+};

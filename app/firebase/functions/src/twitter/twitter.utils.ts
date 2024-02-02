@@ -1,6 +1,6 @@
 import { TweetV2PostTweetResult, TwitterApi } from 'twitter-api-v2';
 
-import { PostCreate, TwitterUser } from '../@webapp/types';
+import { TwitterUser } from '../@webapp/types';
 import {
   TWITTER_API_KEY,
   TWITTER_API_SECRET_KEY,
@@ -86,9 +86,9 @@ export const getTwitterAccessToken = async (
   };
 };
 
-export const postMessage = async (
+export const postMessageTwitter = async (
   userId: string,
-  post: PostCreate
+  text: string
 ): Promise<TweetV2PostTweetResult['data']> => {
   const user = await getUser(userId, true);
 
@@ -103,7 +103,7 @@ export const postMessage = async (
     accessSecret: user.twitter.accessSecret,
   });
 
-  const result = await client.v2.tweet(post.content);
+  const result = await client.v2.tweet(text);
 
   return result.data;
 };

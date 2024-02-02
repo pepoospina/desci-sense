@@ -8,13 +8,13 @@ import { TweetAnchor } from '../app/TwitterAnchor';
 import { ViewportPage } from '../app/Viewport';
 import { PostEditor } from '../post/PostEditor';
 import { postMessage } from '../post/post.utils';
-import { PLATFORM, TweetRead } from '../types';
+import { AppPost, PLATFORM } from '../types';
 import { AppButton, AppCard, AppHeading } from '../ui-components';
 import { BoxCentered } from '../ui-components/BoxCentered';
 import { Loading } from '../ui-components/LoadingDiv';
 import { useThemeContext } from '../ui-components/ThemedApp';
 
-export const AppPost = (props: {}) => {
+export const AppPostPage = (props: {}) => {
   const { t } = useTranslation();
   const { constants } = useThemeContext();
   const { appAccessToken, isConnecting, isConnected } = useAccountContext();
@@ -22,7 +22,7 @@ export const AppPost = (props: {}) => {
   const [postText, setPostText] = useState<string>();
   const [isSending, setIsSending] = useState<boolean>();
   const [postSentError, setPostSentError] = useState<boolean>();
-  const [tweet, setTweet] = useState<TweetRead>();
+  const [post, setPost] = useState<AppPost>();
 
   const send = () => {
     if (postText && appAccessToken) {
@@ -30,10 +30,10 @@ export const AppPost = (props: {}) => {
       postMessage(
         { content: postText, platforms: [PLATFORM.X] },
         appAccessToken
-      ).then((tweet) => {
-        if (tweet) {
+      ).then((post) => {
+        if (post) {
           setPostText(undefined);
-          setTweet(tweet);
+          setPost(post);
           setIsSending(false);
         } else {
           setPostSentError(true);
@@ -43,7 +43,7 @@ export const AppPost = (props: {}) => {
   };
 
   const newPost = () => {
-    setTweet(undefined);
+    setPost(undefined);
   };
 
   console.log({ isConnected });
@@ -61,11 +61,11 @@ export const AppPost = (props: {}) => {
       );
     }
 
-    if (tweet) {
+    if (post) {
       return (
         <Box gap="medium" align="center">
           <AppHeading level="3">{t('postSent')}</AppHeading>
-          <TweetAnchor id={tweet.id}></TweetAnchor>
+          <TweetAnchor id={post.tweet?.id}></TweetAnchor>
           <AppButton label={t('postNew')} onClick={() => newPost()}></AppButton>
         </Box>
       );

@@ -5,7 +5,7 @@ import {
   TokenVerifier,
   getTwitterAccessToken,
   getTwitterAuthLink,
-} from '../twitter.auth.utils';
+} from '../../twitter/twitter.utils';
 import { verifierCodeScheme } from './auth.schemas';
 
 export const getTwitterCodeController: RequestHandler = async (

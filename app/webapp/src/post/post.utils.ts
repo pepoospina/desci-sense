@@ -1,7 +1,10 @@
 import { FUNCTIONS_BASE } from '../app/config';
-import { PostCreate } from '../types';
+import { AppPostCreate } from '../types';
 
-export const postMessage = async (post: PostCreate, appAccessToken: string) => {
+export const postMessage = async (
+  post: AppPostCreate,
+  appAccessToken: string
+) => {
   const res = await fetch(FUNCTIONS_BASE + '/posts/post', {
     method: 'post',
     headers: {
