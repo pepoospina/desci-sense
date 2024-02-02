@@ -11,7 +11,7 @@ export const postOrcidCode = async (code: string) => {
   return body.token;
 };
 
-export const getTwitterAuthToken = async (appAccessToken: string) => {
+export const getTwitterAuthLink = async (appAccessToken: string) => {
   const res = await fetch(FUNCTIONS_BASE + '/auth/twitter-code', {
     method: 'post',
     headers: {
@@ -22,7 +22,7 @@ export const getTwitterAuthToken = async (appAccessToken: string) => {
   });
 
   const body = await res.json();
-  return body.oauth_token;
+  return body.authLink;
 };
 
 export const postTwitterVerifierToken = async (

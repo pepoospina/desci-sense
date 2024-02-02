@@ -9,8 +9,8 @@ export interface AppUser {
     oauth_token?: string;
     oauth_token_secret?: string;
     oauth_verifier?: string;
-    oauth_token_access?: string;
-    oauth_token_secret_access?: string;
+    accessToken?: string;
+    accessSecret?: string;
     user_id?: string;
     screen_name?: string;
   };

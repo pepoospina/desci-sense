@@ -9,7 +9,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 
 import {
-  getTwitterAuthToken,
+  getTwitterAuthLink,
   postTwitterVerifierToken,
 } from '../auth/auth.requests';
 import { TwitterUser } from '../types';
@@ -43,8 +43,9 @@ export const TwitterContext = (props: PropsWithChildren) => {
 
   const connect = () => {
     if (appAccessToken) {
-      getTwitterAuthToken(appAccessToken).then((oauthToken) => {
-        setOauthToken(oauthToken);
+      getTwitterAuthLink(appAccessToken).then((authLink) => {
+        tokenHandled.current = true;
+        window.location.href = authLink;
       });
     }
   };
@@ -63,8 +64,6 @@ export const TwitterContext = (props: PropsWithChildren) => {
 
   useEffect(() => {
     if (!tokenHandled.current && oauthToken) {
-      tokenHandled.current = true;
-      window.location.href = `${TWITTER_API_URL}/oauth/authorize?oauth_token=${oauthToken}`;
     }
   }, [oauthToken]);
 
