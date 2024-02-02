@@ -56,6 +56,7 @@ export const AccountContext = (props: PropsWithChildren) => {
       setToken(token);
     } else {
       setToken(undefined);
+      setConnectedUser(null);
     }
   };
 

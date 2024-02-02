@@ -1,8 +1,9 @@
 import { Anchor } from 'grommet';
+import { useTranslation } from 'react-i18next';
 
 import { LoadingDiv } from '../ui-components/LoadingDiv';
 
-export const TwitterAnchor = (props: { screen_name?: string }) => {
+export const TwitterProfileAnchor = (props: { screen_name?: string }) => {
   if (!props.screen_name) {
     return <LoadingDiv></LoadingDiv>;
   }
@@ -13,6 +14,23 @@ export const TwitterAnchor = (props: { screen_name?: string }) => {
       href={`https://twitter.com/${props.screen_name}`}
       size="small">
       {props.screen_name}
+    </Anchor>
+  );
+};
+
+export const TweetAnchor = (props: { id?: string; label?: string }) => {
+  const { t } = useTranslation();
+  const label = props.label ? props.label : t('viewPost');
+  if (!props.id) {
+    return <LoadingDiv></LoadingDiv>;
+  }
+  return (
+    <Anchor
+      style={{}}
+      target="_blank"
+      href={`https://twitter.com/x/status/${props.id}`}
+      size="medium">
+      {label}
     </Anchor>
   );
 };

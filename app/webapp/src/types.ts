@@ -1,3 +1,5 @@
+import { TweetV2PostTweetResult } from 'twitter-api-v2';
+
 export interface AppUser {
   userId: string;
   orcid?: {
@@ -43,3 +45,5 @@ export interface PostCreate {
   content: string;
   platforms: [PLATFORM];
 }
+
+export type TweetRead = TweetV2PostTweetResult['data'];

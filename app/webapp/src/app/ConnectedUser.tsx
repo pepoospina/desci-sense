@@ -8,7 +8,7 @@ import { useThemeContext } from '../ui-components/ThemedApp';
 import { cap } from '../utils/general';
 import { useAccountContext } from './AccountContext';
 import { OrcidAnchor } from './OrcidAnchor';
-import { TwitterAnchor } from './TwitterAnchor';
+import { TwitterProfileAnchor } from './TwitterAnchor';
 
 export const ConnectedUser = (props: {}) => {
   const { t } = useTranslation();
@@ -61,10 +61,10 @@ export const ConnectedUser = (props: {}) => {
 
             <Box margin={{ bottom: 'small' }}>
               <Text>{cap(t('twitter'))}</Text>
-              <TwitterAnchor
+              <TwitterProfileAnchor
                 screen_name={
                   connectedUser?.twitter?.screen_name
-                }></TwitterAnchor>
+                }></TwitterProfileAnchor>
             </Box>
 
             <AppButton

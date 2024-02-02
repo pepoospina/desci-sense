@@ -89,7 +89,7 @@ export const getTwitterAccessToken = async (
 export const postMessage = async (
   userId: string,
   post: PostCreate
-): Promise<TweetV2PostTweetResult> => {
+): Promise<TweetV2PostTweetResult['data']> => {
   const user = await getUser(userId, true);
 
   if (!user.twitter || !user.twitter.accessToken || !user.twitter.accessToken) {
@@ -105,5 +105,5 @@ export const postMessage = async (
 
   const result = await client.v2.tweet(post.content);
 
-  return result;
+  return result.data;
 };
