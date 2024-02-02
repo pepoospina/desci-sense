@@ -81,7 +81,6 @@ export const TwitterContext = (props: PropsWithChildren) => {
         searchParams.delete('oauth_verifier');
         setSearchParams(searchParams);
 
-        localStorage.setItem('twitter_user', JSON.stringify(twitter_user));
         refreshConnectedUser();
       });
     }
