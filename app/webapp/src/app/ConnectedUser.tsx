@@ -9,19 +9,17 @@ import { cap } from '../utils/general';
 import { useAccountContext } from './AccountContext';
 import { OrcidAnchor } from './OrcidAnchor';
 import { TwitterAnchor } from './TwitterAnchor';
-import { useTwitterContext } from './TwitterContext';
 
 export const ConnectedUser = (props: {}) => {
   const { t } = useTranslation();
   const { isConnected, connect, disconnect, connectedUser } =
     useAccountContext();
 
-  const { twitterUser } = useTwitterContext();
   const { constants } = useThemeContext();
 
   const [showDrop, setShowDrop] = useState<boolean>(false);
 
-  const parts = connectedUser?.name.split(' ');
+  const parts = connectedUser?.orcid?.name.split(' ');
   const name = (() => {
     if (!parts) return '';
     if (parts.length > 2) return `${parts[0]} ${parts[2]}`;
@@ -58,13 +56,15 @@ export const ConnectedUser = (props: {}) => {
           <Box pad="20px" gap="small" style={{ width: '220px' }}>
             <Box margin={{ bottom: 'small' }}>
               <Text>{cap(t('orcid'))}</Text>
-              <OrcidAnchor orcid={connectedUser?.orcid}></OrcidAnchor>
+              <OrcidAnchor orcid={connectedUser?.orcid?.orcid}></OrcidAnchor>
             </Box>
 
             <Box margin={{ bottom: 'small' }}>
               <Text>{cap(t('twitter'))}</Text>
               <TwitterAnchor
-                screen_name={twitterUser?.screen_name}></TwitterAnchor>
+                screen_name={
+                  connectedUser?.twitter?.screen_name
+                }></TwitterAnchor>
             </Box>
 
             <AppButton

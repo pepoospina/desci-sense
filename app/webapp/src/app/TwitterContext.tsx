@@ -14,13 +14,12 @@ import {
 } from '../auth/auth.requests';
 import { TwitterUser } from '../types';
 import { useAccountContext } from './AccountContext';
-import { TWITTER_API_URL } from './config';
 
 const DEBUG = true;
 
 export type TwitterContextType = {
   connect: () => void;
-  twitterUser?: TwitterUser;
+  needAuthorize?: boolean;
 };
 
 const TwitterContextValue = createContext<TwitterContextType | undefined>(
@@ -29,17 +28,23 @@ const TwitterContextValue = createContext<TwitterContextType | undefined>(
 
 /** Manages the authentication process */
 export const TwitterContext = (props: PropsWithChildren) => {
-  const { appAccessToken } = useAccountContext();
+  const {
+    appAccessToken,
+    connectedUser,
+    refresh: refreshConnectedUser,
+  } = useAccountContext();
   const tokenHandled = useRef(false);
   const verifierHandled = useRef(false);
-
-  const [oauthToken, setOauthToken] = useState<string>();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const oauth_token_param = searchParams.get('oauth_token');
   const oauth_verifier_param = searchParams.get('oauth_verifier');
 
-  const [twitterUser, setTwitterUser] = useState<TwitterUser>();
+  /**
+   * only ask authorization if twitter user not found locally nor
+   * found in the backend
+   */
+  const [needAuthorize, setNeedAuthorize] = useState<boolean>();
 
   const connect = () => {
     if (appAccessToken) {
@@ -50,27 +55,13 @@ export const TwitterContext = (props: PropsWithChildren) => {
     }
   };
 
-  const checkConnected = () => {
-    const twitter_user_str = localStorage.getItem('twitter_user');
-
-    if (twitter_user_str !== null) {
-      const twitter_user = JSON.parse(twitter_user_str);
-      if (DEBUG) console.log('twitter found', twitter_user);
-      setTwitterUser(twitter_user);
-    } else {
-      setTwitterUser(undefined);
-    }
-  };
-
   useEffect(() => {
-    if (!tokenHandled.current && oauthToken) {
+    if (connectedUser && connectedUser.twitter === undefined) {
+      setNeedAuthorize(true);
     }
-  }, [oauthToken]);
+  }, [connectedUser]);
 
-  useEffect(() => {
-    checkConnected();
-  }, []);
-
+  /** Listen to oauth verifier to send it to the backend */
   useEffect(() => {
     if (
       !verifierHandled.current &&
@@ -91,7 +82,7 @@ export const TwitterContext = (props: PropsWithChildren) => {
         setSearchParams(searchParams);
 
         localStorage.setItem('twitter_user', JSON.stringify(twitter_user));
-        checkConnected();
+        refreshConnectedUser();
       });
     }
   }, [
@@ -106,7 +97,7 @@ export const TwitterContext = (props: PropsWithChildren) => {
     <TwitterContextValue.Provider
       value={{
         connect,
-        twitterUser,
+        needAuthorize,
       }}>
       {props.children}
     </TwitterContextValue.Provider>

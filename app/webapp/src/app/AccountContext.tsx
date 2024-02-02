@@ -1,4 +1,3 @@
-import { JwtPayload, jwtDecode } from 'jwt-decode';
 import {
   PropsWithChildren,
   createContext,
@@ -9,8 +8,8 @@ import {
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { postOrcidCode } from '../auth/auth.requests';
-import { ConnectedUser } from '../types';
+import { getLoggedUser, postOrcidCode } from '../auth/auth.requests';
+import { AppUserRead } from '../types';
 import { TwitterContext } from './TwitterContext';
 import { ORCID_API_URL, ORCID_CLIENT_ID, ORCID_REDIRECT_URL } from './config';
 
@@ -18,14 +17,13 @@ const DEBUG = true;
 
 const ORCID_LOGIN_URL = `${ORCID_API_URL}/oauth/authorize?client_id=${ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ORCID_REDIRECT_URL}`;
 
-type JWT_PAYLOAD = JwtPayload & ConnectedUser;
-
 export type AccountContextType = {
+  connectedUser?: AppUserRead;
   isConnected: boolean;
   isConnecting: boolean;
   disconnect: () => void;
   connect: () => void;
-  connectedUser?: ConnectedUser;
+  refresh: () => void;
   appAccessToken?: string;
 };
 
@@ -36,9 +34,14 @@ const AccountContextValue = createContext<AccountContextType | undefined>(
 /** Manages the authentication process */
 export const AccountContext = (props: PropsWithChildren) => {
   const codeHandled = useRef(false);
+  const tokenHandled = useRef(false);
 
-  const [isConnected, setIsConnected] = useState<boolean>();
-  const [connectedUser, setConnectedUser] = useState<ConnectedUser>();
+  /**
+   * undefined, is checking
+   * null, checked not connected
+   * defined, connected
+   */
+  const [connectedUser, setConnectedUser] = useState<AppUserRead | null>();
   const [token, setToken] = useState<string>();
 
   // Extract the code from URL
@@ -49,18 +52,28 @@ export const AccountContext = (props: PropsWithChildren) => {
     const token = localStorage.getItem('token');
 
     if (token !== null) {
-      const decoded = jwtDecode(token) as JWT_PAYLOAD;
-      if (DEBUG) console.log('user from token', { decoded });
-
+      if (DEBUG) console.log('tokend found in localstorage');
       setToken(token);
-      setConnectedUser(decoded);
-      setIsConnected(true);
     } else {
       setToken(undefined);
-      setConnectedUser(undefined);
-      setIsConnected(false);
     }
   };
+
+  const refresh = () => {
+    if (token) {
+      getLoggedUser(token).then((user) => {
+        if (DEBUG) console.log('got connected user', { user });
+        setConnectedUser(user);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!tokenHandled.current && token) {
+      tokenHandled.current = true;
+      refresh();
+    }
+  }, [token]);
 
   useEffect(() => {
     checkToken();
@@ -81,12 +94,11 @@ export const AccountContext = (props: PropsWithChildren) => {
         checkToken();
       });
     }
-  }, [code]);
+  }, [code, searchParams, setSearchParams]);
 
   const disconnect = () => {
     if (DEBUG) console.log('disconnecting');
     localStorage.removeItem('token');
-    localStorage.removeItem('twitter_user');
     checkToken();
   };
 
@@ -97,11 +109,12 @@ export const AccountContext = (props: PropsWithChildren) => {
   return (
     <AccountContextValue.Provider
       value={{
-        isConnected: isConnected !== undefined ? isConnected : false,
-        isConnecting: isConnected === undefined,
+        connectedUser: connectedUser === null ? undefined : connectedUser,
+        isConnected: connectedUser !== undefined && connectedUser !== null,
+        isConnecting: connectedUser === undefined,
         connect,
         disconnect,
-        connectedUser,
+        refresh,
         appAccessToken: token,
       }}>
       <TwitterContext>{props.children}</TwitterContext>

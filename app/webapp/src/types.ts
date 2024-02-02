@@ -1,10 +1,9 @@
-export interface ConnectedUser {
-  orcid: string;
-  name: string;
-}
-
 export interface AppUser {
   userId: string;
+  orcid?: {
+    orcid: string;
+    name: string;
+  };
   twitter?: {
     oauth_token?: string;
     oauth_token_secret?: string;
@@ -13,6 +12,18 @@ export interface AppUser {
     accessSecret?: string;
     user_id?: string;
     screen_name?: string;
+  };
+}
+
+export interface AppUserRead {
+  userId: string;
+  orcid?: {
+    orcid: string;
+    name: string;
+  };
+  twitter?: {
+    user_id: string;
+    screen_name: string;
   };
 }
 

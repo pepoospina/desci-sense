@@ -3,7 +3,7 @@ import { collections } from '../db/db';
 
 export const getUser = async <T extends boolean>(
   userId: string,
-  shouldThrow: T
+  shouldThrow?: T
 ): Promise<DefinedIfTrue<T, AppUser>> => {
   const ref = collections.users.doc(userId);
   const doc = await ref.get();

@@ -1,4 +1,5 @@
 import { FUNCTIONS_BASE } from '../app/config';
+import { AppUserRead } from '../types';
 
 export const postOrcidCode = async (code: string) => {
   const res = await fetch(FUNCTIONS_BASE + '/auth/code', {
@@ -40,4 +41,19 @@ export const postTwitterVerifierToken = async (
 
   const body = await res.json();
   return body.twitter_user;
+};
+
+export const getLoggedUser = async (
+  appAccessToken: string
+): Promise<AppUserRead> => {
+  const res = await fetch(FUNCTIONS_BASE + '/auth/me', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${appAccessToken}`,
+    },
+  });
+
+  const body = await res.json();
+  return body.user;
 };

@@ -8,12 +8,14 @@ import {
   getTwitterCodeController,
   postTwitterVerifierController,
 } from './controllers/twitter.controller';
+import { getLoggedUserController } from './controllers/user.controller';
 
 const authRouter = express.Router();
 
 authRouter.post('/code', authCodeController);
 authRouter.post('/twitter-code', getTwitterCodeController);
 authRouter.post('/twitter-verifier', postTwitterVerifierController);
+authRouter.post('/me', getLoggedUserController);
 
 export const authApp = functions
   .region('europe-west1')

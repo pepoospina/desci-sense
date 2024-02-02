@@ -14,10 +14,10 @@ export const AppHome = (props: {}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isConnected } = useAccountContext();
-  const { twitterUser, connect: connectTwitter } = useTwitterContext();
+  const { needAuthorize, connect: connectTwitter } = useTwitterContext();
 
   const content = (() => {
-    if (isConnected && !twitterUser)
+    if (isConnected && needAuthorize)
       return (
         <AppButton
           primary
@@ -26,8 +26,6 @@ export const AppHome = (props: {}) => {
       );
 
     if (!isConnected) return <AppConnectWidget></AppConnectWidget>;
-
-    navigate(RouteNames.Post);
 
     return <Loading />;
   })();

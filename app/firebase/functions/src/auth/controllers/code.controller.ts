@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { logger } from 'firebase-functions/v1';
 
+import { AppUser } from '../../@webapp/types';
 import { TOKEN_EXPIRATION } from '../../config/config';
 import { setUser } from '../../db/user.repo';
 import { getAuthenticatedOrcidId } from '../orcid.auth.utils';
@@ -19,22 +20,30 @@ export const authCodeController: RequestHandler = async (request, response) => {
     let token;
 
     if (authenticatedUser && authenticatedUser.orcid) {
-      await setUser({
+      const user: AppUser = {
         userId: authenticatedUser.orcid,
-      });
-
-      /** user correctly authenticated with orcid */
-      token = generateAccessToken(
-        {
+        orcid: {
           orcid: authenticatedUser.orcid,
           name: authenticatedUser.name,
+        },
+      };
+
+      /** store user on the database */
+      logger.debug('storing new user', { user });
+      await setUser(user);
+
+      /** user correctly authenticated store its id in the access token */
+      token = generateAccessToken(
+        {
+          userId: user.userId,
         },
         TOKEN_EXPIRATION
       );
       logger.debug('token generated slice', { token: token.slice(0, 8) });
+      response.status(200).send({ success: true, token });
+    } else {
+      throw new Error(`Error authenticating user on ORCID`);
     }
-
-    response.status(200).send({ success: true, token });
   } catch (error: any) {
     logger.error('error', error);
     response.status(500).send({ success: false, error: error.message });
