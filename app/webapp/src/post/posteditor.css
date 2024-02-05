@@ -1,13 +1,11 @@
-.ql-container {
+.ProseMirror-focused {
+  outline: none; /* Remove the default focus outline */
+}
+
+.editor {
   font-size: 22px;
-  font-weight: 400;
 }
 
-.ql-editor a {
-  color: #ffffff;
-  font-weight: 500;
-}
-
-.ql-editor.ql-blank::before {
-  color: white; /* or any light color for contrast against black */
+.editor p {
+  margin: 0.5em 0px;
 }

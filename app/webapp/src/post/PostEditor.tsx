@@ -1,5 +1,7 @@
 import { ProseMirror } from '@nytimes/react-prosemirror';
 import { Box, Text } from 'grommet';
+import { baseKeymap, splitBlock } from 'prosemirror-commands';
+import { keymap } from 'prosemirror-keymap';
 import { Schema } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import { useEffect, useState } from 'react';
@@ -7,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useThemeContext } from '../ui-components/ThemedApp';
 import './posteditor.css';
+
+const DEBUG = true;
 
 export interface IStatementEditable {
   placeholder?: string;
@@ -22,9 +26,6 @@ const schema = new Schema({
     doc: {
       content: 'block+',
     },
-    text: {
-      group: 'inline',
-    },
     paragraph: {
       group: 'block',
       content: 'inline*',
@@ -32,6 +33,9 @@ const schema = new Schema({
         return ['p', 0];
       },
       parseDOM: [{ tag: 'p' }],
+    },
+    text: {
+      group: 'inline',
     },
   },
   marks: {
@@ -41,16 +45,22 @@ const schema = new Schema({
 });
 
 function editorStateToPlainText(state: any) {
-  const content: any = [];
-  state.doc.forEach((blockNode: any) => {
-    if (blockNode.type.name === 'paragraph') {
-      content.push(blockNode.textContent + '\n\n');
-    }
-  });
+  const paragraphs = state.doc.content.content;
+  const content: string[] = [];
+
+  for (let ix = 0; ix < paragraphs.length; ix++) {
+    const par = paragraphs[ix];
+    const text = par.textContent;
+    const suffix = ix < paragraphs.length - 1 ? '\n\n' : '';
+    content.push(text + suffix);
+  }
+
   return content.join('');
 }
 
-const defaultState = EditorState.create({ schema });
+const defaultState = EditorState.create({
+  schema,
+});
 
 export const PostEditor = (props: IStatementEditable) => {
   const { t } = useTranslation();
@@ -71,6 +81,7 @@ export const PostEditor = (props: IStatementEditable) => {
   useEffect(() => {
     const text = editorStateToPlainText(editorState);
     if (props.onChanged) {
+      if (DEBUG) console.log({ editorState, text });
       props.onChanged(text);
     }
   }, [editorState]);
@@ -94,15 +105,14 @@ export const PostEditor = (props: IStatementEditable) => {
         }}
         pad="small"
         onClick={props.onClick}>
-        <Box>
-          <ProseMirror
-            mount={mount}
-            defaultState={defaultState}
-            state={editorState}
-            dispatchTransaction={handleTransaction}>
-            <div ref={setMount} />
-          </ProseMirror>
-        </Box>
+        <ProseMirror
+          mount={mount}
+          defaultState={defaultState}
+          state={editorState}
+          dispatchTransaction={handleTransaction}
+          plugins={[keymap({ Enter: splitBlock }), keymap(baseKeymap)]}>
+          <div className="editor" ref={setMount} />
+        </ProseMirror>
       </Box>
       {editable ? (
         <Box pad="small">
