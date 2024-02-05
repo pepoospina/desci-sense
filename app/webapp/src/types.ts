@@ -42,9 +42,12 @@ export enum PLATFORM {
 }
 
 export interface AppPostCreate {
-  contentHTML: string;
-  contentPlain: string;
+  content: string;
   platforms: [PLATFORM];
+}
+
+export interface AppPostGetMeta {
+  content: string;
 }
 
 export type AppPostStore = AppPostCreate & {
@@ -57,3 +60,7 @@ export type TweetRead = TweetV2PostTweetResult['data'];
 export type AppPost = AppPostStore & {
   id: string;
 };
+
+export interface AppPostMeta {
+  tags: string[];
+}

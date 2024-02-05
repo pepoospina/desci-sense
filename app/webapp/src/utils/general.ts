@@ -1,8 +1,3 @@
-export const htmlToPlain = (html: string): string => {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || '';
-};
-
 export function toTimestamp(date: string): number {
   return Math.round(new Date(date).getTime() / 1000);
 }

@@ -1,7 +1,5 @@
-import { array, object, string } from 'yup';
+import { object, string } from 'yup';
 
 export const postsValidationScheme = object({
-  contentHTML: string().required(),
-  contentPlain: string().required(),
-  platforms: array().of(string()).required(),
+  content: string().required(),
 }).noUnknown(true);

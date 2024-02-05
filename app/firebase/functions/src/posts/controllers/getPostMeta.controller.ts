@@ -1,11 +1,14 @@
 import { RequestHandler } from 'express';
 import { logger } from 'firebase-functions/v1';
 
-import { AppPostCreate } from '../../@webapp/types';
-import { postPost } from '../posts.service';
+import { AppPostGetMeta } from '../../@webapp/types';
+import { getPostMeta } from '../posts.service';
 import { postsValidationScheme } from './posts.schemas';
 
-export const postController: RequestHandler = async (request, response) => {
+export const getPostMetaController: RequestHandler = async (
+  request,
+  response
+) => {
   try {
     const userId = (request as any).userId;
     if (!userId) {
@@ -14,9 +17,9 @@ export const postController: RequestHandler = async (request, response) => {
     }
     const payload = (await postsValidationScheme.validate(
       request.body
-    )) as AppPostCreate;
+    )) as AppPostGetMeta;
 
-    const post = await postPost(userId, payload);
+    const post = await getPostMeta(payload.content);
 
     response.status(200).send({ success: true, post });
   } catch (error: any) {

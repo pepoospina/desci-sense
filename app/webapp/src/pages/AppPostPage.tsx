@@ -1,27 +1,38 @@
 import { Box, Text } from 'grommet';
 import { Send } from 'grommet-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
 
 import { useAccountContext } from '../app/AccountContext';
 import { TweetAnchor } from '../app/TwitterAnchor';
 import { ViewportPage } from '../app/Viewport';
 import { PostEditor } from '../post/PostEditor';
-import { postMessage } from '../post/post.utils';
-import { AppPost, PLATFORM } from '../types';
+import { getPostMeta, postMessage } from '../post/post.utils';
+import { AppPost, AppPostMeta, PLATFORM } from '../types';
 import { AppButton, AppCard, AppHeading } from '../ui-components';
 import { BoxCentered } from '../ui-components/BoxCentered';
 import { Loading } from '../ui-components/LoadingDiv';
 import { useThemeContext } from '../ui-components/ThemedApp';
+
+const DEBUG = true;
 
 export const AppPostPage = (props: {}) => {
   const { t } = useTranslation();
   const { constants } = useThemeContext();
   const { appAccessToken, isConnecting, isConnected } = useAccountContext();
 
+  /** postText is the text and is in sync with the PostEditor content */
   const [postText, setPostText] = useState<string>();
+  const [postTextDebounced] = useDebounce(postText, 5000);
+
+  /** meta is the metadata of the post */
+  const [meta, setPostMeta] = useState<AppPostMeta>();
+
   const [isSending, setIsSending] = useState<boolean>();
   const [postSentError, setPostSentError] = useState<boolean>();
+
+  /** the published post */
   const [post, setPost] = useState<AppPost>();
 
   const send = () => {
@@ -38,6 +49,22 @@ export const AppPostPage = (props: {}) => {
       });
     }
   };
+
+  const getMeta = () => {
+    if (postText && appAccessToken) {
+      getPostMeta(postText, appAccessToken).then((meta) => {
+        if (DEBUG) console.log({ meta });
+        setPostMeta(meta);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (DEBUG) console.log({ postTextDebounced, postText });
+    if (postTextDebounced) {
+      getMeta();
+    }
+  }, [postTextDebounced]);
 
   const newPost = () => {
     setPost(undefined);
@@ -74,6 +101,8 @@ export const AppPostPage = (props: {}) => {
           onChanged={(text) => {
             setPostText(text);
           }}></PostEditor>
+
+        {meta ? meta.tags.map((tag) => <Text>{`#${tag}`}</Text>) : <></>}
 
         <AppButton
           margin={{ vertical: 'small' }}
