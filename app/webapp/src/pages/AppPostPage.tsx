@@ -24,7 +24,7 @@ export const AppPostPage = (props: {}) => {
 
   /** postText is the text and is in sync with the PostEditor content */
   const [postText, setPostText] = useState<string>();
-  const [postTextDebounced] = useDebounce(postText, 5000);
+  const [postTextDebounced] = useDebounce(postText, 2500);
 
   /** meta is the metadata of the post */
   const [meta, setPostMeta] = useState<AppPostMeta>();
