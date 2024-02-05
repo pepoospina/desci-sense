@@ -1,4 +1,5 @@
 import { ProseMirror } from '@nytimes/react-prosemirror';
+import { EditorProps } from '@nytimes/react-prosemirror/dist/types/hooks/useEditorView';
 import { Box, Text } from 'grommet';
 import { baseKeymap, splitBlock } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
@@ -8,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useThemeContext } from '../ui-components/ThemedApp';
+import { EditorAutoFocus } from './editor.autofocus';
 import './posteditor.css';
 
 const DEBUG = true;
@@ -92,6 +94,13 @@ export const PostEditor = (props: IStatementEditable) => {
     setText(props.value);
   }, [props.value]);
 
+  const editorProps: EditorProps = {
+    defaultState,
+    state: editorState,
+    dispatchTransaction: handleTransaction,
+    plugins: [(keymap({ Enter: splitBlock }), keymap(baseKeymap))],
+  };
+
   return (
     <>
       <Box
@@ -103,15 +112,10 @@ export const PostEditor = (props: IStatementEditable) => {
           cursor: props.onClick ? 'pointer' : '',
           ...props.containerStyle,
         }}
-        pad="small"
         onClick={props.onClick}>
-        <ProseMirror
-          mount={mount}
-          defaultState={defaultState}
-          state={editorState}
-          dispatchTransaction={handleTransaction}
-          plugins={[keymap({ Enter: splitBlock }), keymap(baseKeymap)]}>
+        <ProseMirror mount={mount} {...editorProps}>
           <div className="editor" ref={setMount} />
+          <EditorAutoFocus></EditorAutoFocus>
         </ProseMirror>
       </Box>
       {editable ? (
