@@ -30,9 +30,6 @@ export const AppConnectWidget = () => {
   if (!isConnected) {
     return (
       <>
-        <AppHeading level="3" style={{ marginBottom: '18px' }}>
-          {t('connect')}
-        </AppHeading>
         {isLoading ? (
           <Loading></Loading>
         ) : (

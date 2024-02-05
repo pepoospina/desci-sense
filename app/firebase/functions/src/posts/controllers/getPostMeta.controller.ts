@@ -3,7 +3,7 @@ import { logger } from 'firebase-functions/v1';
 
 import { AppPostGetMeta } from '../../@webapp/types';
 import { getPostMeta } from '../posts.service';
-import { postsValidationScheme } from './posts.schemas';
+import { getPostMetaValidationScheme } from './posts.schemas';
 
 export const getPostMetaController: RequestHandler = async (
   request,
@@ -15,7 +15,7 @@ export const getPostMetaController: RequestHandler = async (
       response.status(403).send({});
       return;
     }
-    const payload = (await postsValidationScheme.validate(
+    const payload = (await getPostMetaValidationScheme.validate(
       request.body
     )) as AppPostGetMeta;
 

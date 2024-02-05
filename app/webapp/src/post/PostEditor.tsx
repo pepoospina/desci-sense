@@ -12,7 +12,7 @@ import { useThemeContext } from '../ui-components/ThemedApp';
 import { EditorAutoFocus } from './editor.autofocus';
 import './posteditor.css';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export interface IStatementEditable {
   placeholder?: string;

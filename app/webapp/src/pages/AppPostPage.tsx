@@ -15,7 +15,7 @@ import { BoxCentered } from '../ui-components/BoxCentered';
 import { Loading } from '../ui-components/LoadingDiv';
 import { useThemeContext } from '../ui-components/ThemedApp';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export const AppPostPage = (props: {}) => {
   const { t } = useTranslation();
@@ -38,7 +38,10 @@ export const AppPostPage = (props: {}) => {
   const send = () => {
     if (postText && appAccessToken) {
       setIsSending(true);
-      postMessage(postText, [PLATFORM.X], appAccessToken).then((post) => {
+      postMessage(
+        { content: postText, meta, platforms: [PLATFORM.X] },
+        appAccessToken
+      ).then((post) => {
         if (post) {
           setPostText(undefined);
           setPost(post);
@@ -68,6 +71,7 @@ export const AppPostPage = (props: {}) => {
 
   const newPost = () => {
     setPost(undefined);
+    setPostMeta(undefined);
   };
 
   const content = (() => {
@@ -102,8 +106,12 @@ export const AppPostPage = (props: {}) => {
             setPostText(text);
           }}></PostEditor>
 
-        <Box direction="row" gap="small" margin={{ bottom: 'medium' }}>
-          {meta ? meta.tags.map((tag) => <Text>{`#${tag}`}</Text>) : <></>}
+        <Box direction="row" gap="medium" margin={{ bottom: 'medium' }}>
+          {meta ? (
+            meta.tags.map((tag, ix) => <Text key={ix}>{`#${tag}`}</Text>)
+          ) : (
+            <></>
+          )}
         </Box>
 
         <AppButton
