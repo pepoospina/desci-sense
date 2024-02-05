@@ -102,7 +102,9 @@ export const AppPostPage = (props: {}) => {
             setPostText(text);
           }}></PostEditor>
 
-        {meta ? meta.tags.map((tag) => <Text>{`#${tag}`}</Text>) : <></>}
+        <Box direction="row" gap="small" margin={{ bottom: 'medium' }}>
+          {meta ? meta.tags.map((tag) => <Text>{`#${tag}`}</Text>) : <></>}
+        </Box>
 
         <AppButton
           margin={{ vertical: 'small' }}
