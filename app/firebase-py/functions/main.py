@@ -12,8 +12,9 @@ app = initialize_app()
 def SM_FUNCTION_post_tagger(request):
     request_json = request.get_json()
     content =  request_json['content'];
+    parameters =  request_json['parameters'];
     
-    meta = SM_FUNCTION_post_tagger_imp(content)
+    meta = SM_FUNCTION_post_tagger_imp(content, parameters)
     
     return https_fn.Response(
         json.dumps({"meta": meta }),

@@ -1,10 +1,8 @@
  
 def SM_FUNCTION_post_tagger_imp(content, parameters) -> dict:
     
-    if 'job' in content:
-        tags = parameters["options"]
-    else:
-        tags = []
+    tags = parameters["options"]
+    tags = [tag for tag in tags if tag in content]
         
     return {"tags": tags }
     
