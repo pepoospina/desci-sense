@@ -16,6 +16,8 @@ export const SENSENET_DOMAIN = 'http://127.0.0.1:3000/';
 
 export const TOKEN_EXPIRATION = '30d';
 
+export const REGION = 'us-central1';
+
 if (!ORCID_CLIENT_ID) throw new Error('ORCID_CLIENT_ID undefined');
 if (!ORCID_SECRET) throw new Error('ORCID_SECRET undefined');
 if (!TWITTER_CLIENT_ID) throw new Error('TWITTER_CLIENT_ID undefined');

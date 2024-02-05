@@ -2,6 +2,7 @@ import express from 'express';
 import * as functions from 'firebase-functions';
 
 import { RUNTIME_OPTIONS } from '../config/RUNTIME_OPTIONS';
+import { REGION } from '../config/config';
 import { app } from '../instances/app';
 import { authCodeController } from './controllers/code.controller';
 import {
@@ -18,6 +19,6 @@ authRouter.post('/twitter-verifier', postTwitterVerifierController);
 authRouter.post('/me', getLoggedUserController);
 
 export const authApp = functions
-  .region('europe-west1')
+  .region(REGION)
   .runWith({ ...RUNTIME_OPTIONS })
   .https.onRequest(app(authRouter));
