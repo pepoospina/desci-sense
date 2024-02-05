@@ -1,10 +1,18 @@
 import { FUNCTIONS_BASE } from '../app/config';
-import { AppPostCreate } from '../types';
+import { AppPostCreate, PLATFORM } from '../types';
+import { htmlToPlain } from '../utils/general';
 
 export const postMessage = async (
-  post: AppPostCreate,
+  contentHTML: string,
+  platforms: [PLATFORM],
   appAccessToken: string
 ) => {
+  const contentPlain = htmlToPlain(contentHTML);
+  const post: AppPostCreate = {
+    contentHTML,
+    contentPlain,
+    platforms,
+  };
   const res = await fetch(FUNCTIONS_BASE + '/posts/post', {
     method: 'post',
     headers: {
@@ -15,5 +23,5 @@ export const postMessage = async (
   });
 
   const body = await res.json();
-  return body.tweet;
+  return body.post;
 };

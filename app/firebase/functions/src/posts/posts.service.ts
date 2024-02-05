@@ -6,7 +6,7 @@ export const postPost = async (userId: string, post: AppPostCreate) => {
   let tweet: TweetRead | undefined = undefined;
 
   if (post.platforms.includes(PLATFORM.X)) {
-    tweet = await postMessageTwitter(userId, post.content);
+    tweet = await postMessageTwitter(userId, post.contentPlain);
   }
 
   const createdPost = await createPost({ ...post, author: userId, tweet });

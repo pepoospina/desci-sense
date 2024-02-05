@@ -42,7 +42,8 @@ export enum PLATFORM {
 }
 
 export interface AppPostCreate {
-  content: string;
+  contentHTML: string;
+  contentPlain: string;
   platforms: [PLATFORM];
 }
 

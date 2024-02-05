@@ -1,8 +1,9 @@
+import { ProseMirror } from '@nytimes/react-prosemirror';
 import { Box, Text } from 'grommet';
+import { Schema } from 'prosemirror-model';
+import { EditorState } from 'prosemirror-state';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactQuill, { Quill } from 'react-quill';
-import 'react-quill/dist/quill.bubble.css';
 
 import { useThemeContext } from '../ui-components/ThemedApp';
 import './posteditor.css';
@@ -16,49 +17,69 @@ export interface IStatementEditable {
   containerStyle?: React.CSSProperties;
 }
 
+const schema = new Schema({
+  nodes: {
+    doc: {
+      content: 'block+',
+    },
+    text: {
+      group: 'inline',
+    },
+    paragraph: {
+      group: 'block',
+      content: 'inline*',
+      toDOM() {
+        return ['p', 0];
+      },
+      parseDOM: [{ tag: 'p' }],
+    },
+  },
+  marks: {
+    // While we want to keep the schema to plain text, you might consider using
+    // a plugin for URL detection and styling instead of a schema mark for links.
+  },
+});
+
+function editorStateToPlainText(state: any) {
+  const content: any = [];
+  state.doc.forEach((blockNode: any) => {
+    if (blockNode.type.name === 'paragraph') {
+      content.push(blockNode.textContent + '\n\n');
+    }
+  });
+  return content.join('');
+}
+
+const defaultState = EditorState.create({ schema });
+
 export const PostEditor = (props: IStatementEditable) => {
   const { t } = useTranslation();
   const { constants } = useThemeContext();
   const [text, setText] = useState<string>();
 
+  const [mount, setMount] = useState<HTMLElement | null>(null);
+  const [editorState, setEditorState] = useState(
+    EditorState.create({ schema })
+  );
+
   const editable = props.editable !== undefined && props.editable;
 
+  const handleTransaction = (tr: any) => {
+    setEditorState((s) => s.apply(tr));
+  };
+
   useEffect(() => {
+    const text = editorStateToPlainText(editorState);
     if (props.onChanged) {
       props.onChanged(text);
     }
-  }, [text, props.onChanged]);
+  }, [editorState]);
+
+  useEffect(() => {}, [text, props.onChanged]);
 
   useEffect(() => {
     setText(props.value);
   }, [props.value]);
-
-  useEffect(() => {
-    const LinkBlot = Quill.import('formats/link');
-
-    class CustomLinkBlot extends LinkBlot {
-      static create(value: any) {
-        let node = super.create(value);
-        value = this.sanitize(value);
-
-        node.setAttribute('href', value);
-        // If link does not start with 'http://' or 'https://', prepend 'http://'
-        if (!/^https?:\/\//i.test(value)) {
-          node.setAttribute('href', `http://${value}`);
-        }
-        return node;
-      }
-    }
-
-    Quill.register(CustomLinkBlot, true);
-  }, []);
-
-  const modules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'], // toggled buttons
-      ['link'], // link button
-    ],
-  };
 
   return (
     <>
@@ -74,14 +95,13 @@ export const PostEditor = (props: IStatementEditable) => {
         pad="small"
         onClick={props.onClick}>
         <Box>
-          <ReactQuill
-            placeholder={props.placeholder}
-            theme="bubble"
-            modules={modules}
-            value={text}
-            onChange={setText}
-            readOnly={!editable}
-          />
+          <ProseMirror
+            mount={mount}
+            defaultState={defaultState}
+            state={editorState}
+            dispatchTransaction={handleTransaction}>
+            <div ref={setMount} />
+          </ProseMirror>
         </Box>
       </Box>
       {editable ? (

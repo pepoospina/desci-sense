@@ -27,10 +27,7 @@ export const AppPostPage = (props: {}) => {
   const send = () => {
     if (postText && appAccessToken) {
       setIsSending(true);
-      postMessage(
-        { content: postText, platforms: [PLATFORM.X] },
-        appAccessToken
-      ).then((post) => {
+      postMessage(postText, [PLATFORM.X], appAccessToken).then((post) => {
         if (post) {
           setPostText(undefined);
           setPost(post);
@@ -45,8 +42,6 @@ export const AppPostPage = (props: {}) => {
   const newPost = () => {
     setPost(undefined);
   };
-
-  console.log({ isConnected });
 
   const content = (() => {
     if (isSending || isConnecting) {
@@ -84,7 +79,7 @@ export const AppPostPage = (props: {}) => {
           margin={{ vertical: 'small' }}
           reverse
           icon={<Send color={constants.colors.primary}></Send>}
-          label={t('send')}
+          label={t('post')}
           onClick={() => send()}></AppButton>
       </Box>
     );
