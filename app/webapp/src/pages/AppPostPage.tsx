@@ -1,6 +1,6 @@
 import { Box, Text } from 'grommet';
 import { Send } from 'grommet-icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 
@@ -9,13 +9,13 @@ import { TweetAnchor } from '../app/TwitterAnchor';
 import { ViewportPage } from '../app/Viewport';
 import { PostEditor } from '../post/PostEditor';
 import { getPostMeta, postMessage } from '../post/post.utils';
-import { AppPost, AppPostMeta, PLATFORM } from '../types';
+import { AppPost, AppPostCreate, AppPostMeta, PLATFORM } from '../types';
 import { AppButton, AppCard, AppHeading } from '../ui-components';
 import { BoxCentered } from '../ui-components/BoxCentered';
 import { Loading } from '../ui-components/LoadingDiv';
 import { useThemeContext } from '../ui-components/ThemedApp';
 
-const DEBUG = false;
+const DEBUG = true;
 
 export const AppPostPage = (props: {}) => {
   const { t } = useTranslation();
@@ -38,10 +38,13 @@ export const AppPostPage = (props: {}) => {
   const send = () => {
     if (postText && appAccessToken) {
       setIsSending(true);
-      postMessage(
-        { content: postText, meta, platforms: [PLATFORM.X] },
-        appAccessToken
-      ).then((post) => {
+      const postCreate: AppPostCreate = {
+        content: postText,
+        meta,
+        platforms: [PLATFORM.X],
+      };
+      if (DEBUG) console.log('postMessage', { postCreate });
+      postMessage(postCreate, appAccessToken).then((post) => {
         if (post) {
           setPostText(undefined);
           setPost(post);
@@ -55,6 +58,7 @@ export const AppPostPage = (props: {}) => {
 
   const getMeta = () => {
     if (postText && appAccessToken) {
+      if (DEBUG) console.log('getPostMeta', { postText });
       getPostMeta(postText, appAccessToken).then((meta) => {
         if (DEBUG) console.log({ meta });
         setPostMeta(meta);

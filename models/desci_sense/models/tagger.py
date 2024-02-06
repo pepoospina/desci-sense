@@ -1,4 +1,3 @@
- 
 def SM_FUNCTION_post_tagger_imp(content, parameters) -> dict:
     
     tags = parameters["options"]
