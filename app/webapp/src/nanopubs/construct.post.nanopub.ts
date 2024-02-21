@@ -49,17 +49,17 @@ export const constructPostNanopub = async (
   const exampleTriplet =
     process.env.NODE_ENV !== 'production' ? `: a npx:ExampleNanopub .` : '';
 
+  const semanticPostTriplet =  `: a https://sense-nets.xyz/SemanticPost .`
+
   /** append the data related to the author (including) identity */
   const orcid = user.orcid?.orcid;
 
   const hasEthSigner = user.eth !== undefined;
   const address = user.eth?.ethAddress;
-  const ethSignature = user.eth?.ethSignature;
 
   const ethSignerRdf = hasEthSigner
     ? `
       : <http://sense-nets.xyz/rootSigner> "${address}" .
-      : <http://sense-nets.xyz/rootToRsaSignature> "${ethSignature}" .
   `
     : '';
 
@@ -88,6 +88,7 @@ export const constructPostNanopub = async (
       ${assertionsRdf}
     }
     
+    
     :provenance {
       :assertion prov:wasAttributedTo orcid:${orcid} .
     }
@@ -95,6 +96,7 @@ export const constructPostNanopub = async (
     :pubinfo {
       ${hasEthSigner ? ethSignerRdf : ''}      
       ${exampleTriplet}
+      ${semanticPostTriplet}
     }
   `;
 
