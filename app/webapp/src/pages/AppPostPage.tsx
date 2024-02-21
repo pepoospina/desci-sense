@@ -59,7 +59,8 @@ export const AppPostPage = (props: {}) => {
   const [post, setPost] = useState<AppPost>();
 
   const canReRun = parsed && postText !== parsed.post;
-  const canPost = platforms && platforms.length && !isGettingSemantics;
+  const canPost =
+    postText && platforms && platforms.length && !isGettingSemantics;
 
   // const reset = () => {
   //   setPost(undefined);
