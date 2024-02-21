@@ -6,6 +6,7 @@ import {
   getTwitterAccessToken,
   getTwitterAuthLink,
 } from '../../twitter/twitter.utils';
+import { validateUser } from '../utils';
 import { verifierCodeScheme } from './auth.schemas';
 
 export const getTwitterCodeController: RequestHandler = async (
@@ -13,11 +14,8 @@ export const getTwitterCodeController: RequestHandler = async (
   response
 ) => {
   try {
-    const userId = (request as any).userId;
-    if (!userId) {
-      response.status(403).send({});
-      return;
-    }
+    const userId = validateUser(request, response);
+    if (!userId) return;
 
     let authLink = await getTwitterAuthLink(userId);
     response.status(200).send({ success: true, authLink });
