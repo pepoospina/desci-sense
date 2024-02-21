@@ -207,6 +207,7 @@ export const AppPostPage = (props: {}) => {
             <Box fill>
               {canReRun ? (
                 <AppButton
+                  disabled={isGettingSemantics}
                   margin={{ vertical: 'small' }}
                   onClick={() => getSemantics()}
                   label={semantics ? t('reset') : t('refresh')}

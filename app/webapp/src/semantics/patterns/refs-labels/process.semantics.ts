@@ -54,10 +54,7 @@ export const processSemantics = (
   /** then append the metadata for each ref */
   for (const [ref, value] of Array.from(refs.entries())) {
     const meta = support?.refs_meta ? support.refs_meta[ref] : undefined;
-    if (!meta) {
-      throw new Error('Unsupported from now undefined meta for ref');
-    }
-
+    
     refs.set(ref, {
       labelsUris: value ? value.labelsUris : [],
       meta,

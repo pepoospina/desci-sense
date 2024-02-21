@@ -79,6 +79,7 @@ export const RefLabelsComponent = (props: PatternProps) => {
               return (
                 <RefLabels
                   key={ixref}
+                  refUrl={ref}
                   refData={refData}
                   support={props.originalParsed?.support}
                   removeLabel={(labelUri: string) => removeLabel(ref, labelUri)}

@@ -1,4 +1,4 @@
-import { Box } from 'grommet';
+import { Anchor, Box } from 'grommet';
 import { useMemo } from 'react';
 
 import { ParsedSupport, RefMeta } from '../../../shared/parser.types';
@@ -11,6 +11,7 @@ const DEBUG = true;
 
 /** renders the labels for one ref */
 export const RefLabels = (props: {
+  refUrl: string;
   refData: RefData;
   support?: ParsedSupport;
   addLabel: (labelUri: string) => void;
@@ -83,10 +84,10 @@ export const RefLabels = (props: {
           removeLabel={(label) => removeLabel(label)}
           addLabel={(label) => addLabel(label)}></AppLabelsEditor>
       </Box>
-      <RefCard
+      {refData.meta ? <RefCard
         title={refData.meta?.title}
         description={refData.meta?.summary}
-        image={refData.meta?.image}></RefCard>
+        image={refData.meta?.image}></RefCard> : <Anchor target="_blank" href={props.refUrl}>{props.refUrl}</Anchor>}
     </Box>
   );
 };
