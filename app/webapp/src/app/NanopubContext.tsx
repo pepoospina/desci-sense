@@ -23,7 +23,7 @@ import { useAccountContext } from './AccountContext';
 import { NANOPUBS_SERVER } from './config';
 import { useAppSigner } from './signer/SignerContext';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export type NanopubContextType = {
   profile?: NpProfile;
