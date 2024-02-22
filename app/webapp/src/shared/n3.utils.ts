@@ -32,7 +32,7 @@ export const parseRDF = (text: string): Promise<Store> => {
 };
 
 export const writeRDF = async (store: Store): Promise<string | undefined> => {
-  const writer = new Writer({ format: 'N-Triples' });
+  const writer = new Writer({ format: 'Trig' });
   store.forEach((quad) => writer.addQuad(quad), null, null, null, null);
 
   return new Promise((resolve, reject) => {
@@ -129,7 +129,7 @@ export const forEachStore = (
 /**
  * from a dictionary of values, return a node of the same type if the value
  * is a key in the dictionary with the dictionary value for that key */
-const replaceNode = (
+export const replaceNode = (
   node: NamedNode | BlankNode | Variable | Literal,
   replaceMap: Record<string, string>
 ): NamedNode | BlankNode | Variable | Literal => {

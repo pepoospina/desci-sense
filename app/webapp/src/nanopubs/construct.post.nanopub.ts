@@ -1,15 +1,29 @@
 import init, { Nanopub } from '@nanopub/sign';
-import { DataFactory, Store } from 'n3';
+import { DataFactory, NamedNode, Quad_Subject, Store } from 'n3';
 
 import { THIS_POST_NAME } from '../app/config';
-import { parseRDF, replaceNodes, writeRDF } from '../shared/n3.utils';
+import {
+  forEachStore,
+  parseRDF,
+  replaceNode,
+  writeRDF,
+} from '../shared/n3.utils';
 import { AppPostSemantics } from '../shared/parser.types';
 import { AppUserRead } from '../shared/types';
 import {
-  ASSERTION_URI,
+  ASSERTION_GRAPH,
+  COSMO_SCHEMA,
   HAS_COMMENT_URI,
+  HEAD_GRAPH,
+  IS_A,
   NANOPUB_PLACEHOLDER,
+  NANOPUB_SCHEMA,
+  ORCID_URL,
+  PROVENANCE_GRAPH,
+  PUBINFO_GRAPH,
 } from './semantics.helper';
+
+const { defaultGraph, literal, namedNode } = DataFactory;
 
 export const constructPostNanopub = async (
   content: string,
@@ -17,89 +31,103 @@ export const constructPostNanopub = async (
   semantics?: AppPostSemantics
 ): Promise<Nanopub> => {
   await (init as any)();
-
-  /** Then get the RDF as triplets */
-  const assertionsStore = await (async () => {
-    if (!semantics) return new Store();
-
-    const store = await parseRDF(semantics);
-
-    /** Manipulate assertion semantics on the N3 store */
-
-    /** replace THIS_POST_NAME node with the nanopub:assertion node */
-    const assertionsStore = replaceNodes(store, {
-      [THIS_POST_NAME]: ASSERTION_URI,
-    });
-
-    return assertionsStore;
-  })();
-
-  /** Add the post context as a comment of the assertion */
-  assertionsStore.addQuad(
-    DataFactory.namedNode(ASSERTION_URI),
-    DataFactory.namedNode(HAS_COMMENT_URI),
-    DataFactory.literal(content),
-    DataFactory.defaultGraph()
-  );
-
-  /** Then get the RDF as triplets */
-  const assertionsRdf = await writeRDF(assertionsStore);
-
-  /** append the npx:ExampleNanopub (manually for now) */
-  const exampleTriplet =
-    process.env.NODE_ENV !== 'production' ? `: a npx:ExampleNanopub .` : '';
-
-  const semanticPostTriplet =  `: a <https://sense-nets.xyz/SemanticPost> .`
-
-  /** append the data related to the author (including) identity */
   const orcid = user.orcid?.orcid;
-
-  const hasEthSigner = user.eth !== undefined;
   const address = user.eth?.ethAddress;
 
-  const ethSignerRdf = hasEthSigner
-    ? `
-      : <http://sense-nets.xyz/rootSigner> "${address}" .
-  `
-    : '';
+  const npStore = new Store();
+  const assertionsStore = semantics ? await parseRDF(semantics) : undefined;
 
-  const rdfStr = `
-    @prefix : <${NANOPUB_PLACEHOLDER}> .
-    @prefix np: <http://www.nanopub.org/nschema#> .
-    @prefix dct: <http://purl.org/dc/terms/> .
-    @prefix nt: <https://w3id.org/np/o/ntemplate/> .
-    @prefix npx: <http://purl.org/nanopub/x/> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix orcid: <https://orcid.org/> .
-    @prefix ns1: <http://purl.org/np/> .
-    @prefix prov: <http://www.w3.org/ns/prov#> .
-    @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-    
-    :Head {
-      : np:hasAssertion :assertion ;
-        np:hasProvenance :provenance ;
-        np:hasPublicationInfo :pubinfo ;
-        a np:Nanopublication .
-    }
-    
-    :assertion {
-      :assertion dct:creator orcid:${orcid} .
-      ${assertionsRdf}
-    }
-    
-    
-    :provenance {
-      :assertion prov:wasAttributedTo orcid:${orcid} .
-    }
-    
-    :pubinfo {
-      ${hasEthSigner ? ethSignerRdf : ''}      
-      ${exampleTriplet}
-      ${semanticPostTriplet}
-    }
-  `;
+  if (assertionsStore) {
+    /** add the parser semantics in the :assertion nanopub subgraph */
+    forEachStore(assertionsStore, (quad) => {
+      const subject = replaceNode(quad.subject as NamedNode, {
+        [THIS_POST_NAME]: ASSERTION_GRAPH,
+      }) as Quad_Subject;
 
+      npStore.addQuad(
+        subject,
+        quad.predicate,
+        quad.object,
+        namedNode(ASSERTION_GRAPH)
+      );
+    });
+  }
+
+  /** add the post content as an assertion */
+  npStore.addQuad(
+    namedNode(ASSERTION_GRAPH),
+    namedNode(HAS_COMMENT_URI),
+    literal(content),
+    namedNode(ASSERTION_GRAPH)
+  );
+
+  /** mark as an example nanopub */
+  npStore.addQuad(
+    namedNode(NANOPUB_PLACEHOLDER),
+    namedNode(IS_A),
+    namedNode(`${NANOPUB_SCHEMA}ExampleNanopub`),
+    namedNode(PUBINFO_GRAPH)
+  );
+
+  /** head */
+  npStore.addQuad(
+    namedNode(`${NANOPUB_PLACEHOLDER}#Head`),
+    namedNode(`${NANOPUB_SCHEMA}hasAssertion`),
+    namedNode(ASSERTION_GRAPH),
+    defaultGraph()
+  );
+
+  npStore.addQuad(
+    namedNode(`${NANOPUB_PLACEHOLDER}#Head`),
+    namedNode(`${NANOPUB_SCHEMA}hasProvenance`),
+    namedNode(PROVENANCE_GRAPH),
+    defaultGraph()
+  );
+
+  npStore.addQuad(
+    namedNode(NANOPUB_PLACEHOLDER),
+    namedNode(`${NANOPUB_SCHEMA}hasPublicationInfo`),
+    namedNode(PUBINFO_GRAPH),
+    defaultGraph()
+  );
+
+  npStore.addQuad(
+    namedNode(NANOPUB_PLACEHOLDER),
+    namedNode(IS_A),
+    namedNode(`${NANOPUB_SCHEMA}Nanopublication`),
+    defaultGraph()
+  );
+
+  npStore.addQuad(
+    namedNode(`${NANOPUB_PLACEHOLDER}#activity`),
+    namedNode(IS_A),
+    namedNode(`${COSMO_SCHEMA}nlpFacilitatedActivity`),
+    namedNode(PROVENANCE_GRAPH)
+  );
+
+  npStore.addQuad(
+    namedNode(ASSERTION_GRAPH),
+    namedNode('http://www.w3.org/ns/prov#wasAttributedTo'),
+    namedNode(`${ORCID_URL}${orcid}`),
+    namedNode(PROVENANCE_GRAPH)
+  );
+
+  /** mark as an exmaple nanopub */
+  npStore.addQuad(
+    namedNode(NANOPUB_PLACEHOLDER),
+    namedNode(IS_A),
+    namedNode(`${COSMO_SCHEMA}SemanticPost`),
+    namedNode(PUBINFO_GRAPH)
+  );
+
+  npStore.addQuad(
+    namedNode(NANOPUB_PLACEHOLDER),
+    namedNode(`${COSMO_SCHEMA}SignedBy`),
+    namedNode(`https://etherscan.io/address/${address}`),
+    namedNode(PUBINFO_GRAPH)
+  );
+
+  const rdfStr = await writeRDF(npStore);
   const np = new Nanopub(rdfStr);
   return np;
 };
