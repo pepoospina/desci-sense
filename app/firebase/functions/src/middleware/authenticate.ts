@@ -19,15 +19,16 @@ export const authenticate: RequestHandler = async (request, response, next) => {
     }
 
     const token = parts[1];
-    logger.debug('Authenticated request', { token: token.slice(0, 8) });
+    logger.debug(`Authentica request token: ${token.slice(0,12)}`);
     const userId = verifyAccessToken(token);
-    logger.debug('Authenticated request', { userId });
+    
+    logger.debug(`Authenticated user: ${userId}`);
 
     (request as any).userId = userId;
 
     return next();
   } catch (error: any) {
-    logger.error('error', error);
+    logger.error(`error ${JSON.stringify(error)}`);
     response.status(500).send({ success: false, error: error.message });
   }
 };
