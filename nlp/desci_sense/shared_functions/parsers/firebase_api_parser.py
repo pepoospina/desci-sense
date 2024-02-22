@@ -530,6 +530,14 @@ class FirebaseAPIParser:
             "md_list": md_list,
         }
 
+        # logger.info(
+        #     f"combined_result[semantics]: {combined_result['semantics']['full_prompt']}"
+        # )
+
+        # logger.info(
+        #     f"combined_result[keywords]: {combined_result['keywords']['full_prompt']}"
+        # )
+
         return combined_result
 
     def extract_post_topics_w_metadata(self, post: RefPost) -> List[str]:
