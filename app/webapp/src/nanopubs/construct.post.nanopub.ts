@@ -49,7 +49,7 @@ export const constructPostNanopub = async (
   const exampleTriplet =
     process.env.NODE_ENV !== 'production' ? `: a npx:ExampleNanopub .` : '';
 
-  const semanticPostTriplet =  `: a https://sense-nets.xyz/SemanticPost .`
+  const semanticPostTriplet =  `: a <https://sense-nets.xyz/SemanticPost> .`
 
   /** append the data related to the author (including) identity */
   const orcid = user.orcid?.orcid;
